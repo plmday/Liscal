@@ -95,3 +95,9 @@ verify27() = norm("(\< (list) (list 1))").wnf == Tru;
 public test bool
 verify28() = norm("(\> (list 2 1) (list 1 2))").wnf == Tru;
 
+public test bool
+verify29() = norm("(begin (define x 1) (define f (lambda (y) (+ x y))) ((lambda (x) (f 3)) 2))").wnf == Nmr(4);
+
+public test bool
+verify30() = norm("(begin (define f (lambda (x) (begin (define g (lambda (y) (+ x y))) g))) (define h (f 1)) (h 2))").wnf == Nmr(3);
+
