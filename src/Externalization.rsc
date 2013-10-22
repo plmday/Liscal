@@ -17,15 +17,15 @@ public str
 externalize(Lst([*Imp imps])) = "(" + printList(imps) + ")";
 
 public str
-externalize(Prc(nom, ary, _)) = "<nom>[<ary>]";
+externalize(Prc(prc, ary, _)) = "<externalize(prc)>[<ary>]";
 
 public str
 externalize(Rpl(msg)) = msg;
 
 
-private str
+public str
 printList([Imp imp]) = externalize(imp);
 
-private str
+public str
 printList([Imp imp, *Imp imps]) = externalize(imp) + " " + printList(imps);
 

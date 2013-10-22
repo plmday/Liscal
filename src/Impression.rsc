@@ -9,7 +9,7 @@ Imp = Nmr(int nat)
     | Bln(bool bln)
     | Smb(str nom)
     | Lst(list[Imp] imps)
-    | Prc(str nom, int ary, Rsl(list[Imp] args, Env env))
+    | Prc(Imp cmb, int ary, Rsl(list[Imp] args, Env env))
     | Rpl(str msg);
 
 public alias

@@ -107,3 +107,9 @@ verify31() = norm("(begin (define x 1) x)").wnf == Nmr(1);
 public test bool
 verify32() = norm("(begin (define (id x) x) (id 1))").wnf == Nmr(1);
 
+public test bool
+verify33() = norm("((+ 1) 2)").wnf == Nmr(3);
+
+public test bool
+verify34() = norm("(begin (define add1 (+ 1)) (add1 2))").wnf == Nmr(3);
+

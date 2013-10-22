@@ -4,6 +4,7 @@ module Normalization
 import Prelude;
 import Impression;
 import Externalization;
+import Initialization;
 
 
 public Env
@@ -66,10 +67,10 @@ normalize(Lst([Smb("set!"), Imp var, Imp imp]), Env env) {
 public Rsl
 normalize(Lst([Smb("define"), Imp pat, Imp imp]), Env env) {
   switch (pat) {
-    case Lst([var:Smb(nom), *pars]): {
+    case Lst([var, *pars]): {
       dep = size(env);
       env[0][var]
-        = Prc(nom, size(pars),
+        = Prc(var, size(pars),
               Rsl([*Imp args], Env env) {
                 return normalize(imp, reside(pars, args, tail(env, dep)));
               });
@@ -98,9 +99,23 @@ normalize(Imp imp, Env env) = <imp, env>;
 public Rsl
 reduce(Imp opr, [*Imp opds], Env env) {
   switch (normalize(opr, env).wnf) {
-    case Prc(_, _, prc): {
-      args = [normalize(opd, env).wnf | opd <- opds];
-      return prc(args, env);
+    case Prc(prc, ary, fun): {
+      len = size(opds);
+      if (len > ary)
+        return <Rpl("Arguments overflow: <externalize(prc)>[<ary>](<printList(opds)>)"), env>;
+      else {
+        args = [normalize(opd, env).wnf | opd <- opds];
+        if (ary != pInf && len < ary)
+          switch (prc) {
+            case Smb(_): return <Prc(Lst([prc, *args]), ary - len, fun), env>;
+            case Lst(imps): return <Prc(Lst(imps + args), ary - len, fun), env>;
+          }
+        else
+          switch (prc) {
+            case Smb(_): return fun(args, env);
+            case Lst([_, *argm]): return fun(argm + args, env);
+          }
+      }
     }
     default: return <Rpl("Designating non-procedure: <externalize(opr)>"), env>;
   }
