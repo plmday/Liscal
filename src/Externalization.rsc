@@ -17,10 +17,7 @@ public str
 externalize(Lst([*Imp imps])) = "(" + printList(imps) + ")";
 
 public str
-externalize(Cls(Imp pat, Imp bod, Env _)) = "_<externalize(pat)>";
-
-public str
-externalize(Prm(nom, _)) = "<nom>(...)";
+externalize(Prc(nom, ary, _)) = "<nom>[<ary>]";
 
 public str
 externalize(Rpl(msg)) = msg;

@@ -3,6 +3,7 @@ module Normalization
 
 import Prelude;
 import Impression;
+import Externalization;
 
 
 public Env
@@ -31,10 +32,6 @@ normalize(var:Smb(nom), Env env) {
   else
     return <env[ind][var], env>;
 }
-
-public Rsl
-normalize(Lst([Smb("lambda"), Imp pat, Imp bod]), Env env)
-  = <Cls(pat, bod, size(env)), env>;
 
 public Rsl
 normalize(Lst([Smb("if"), Imp cnd, Imp csq, Imp alt]), Env env) {
@@ -67,10 +64,24 @@ normalize(Lst([Smb("set!"), Imp var, Imp imp]), Env env) {
 }
 
 public Rsl
-normalize(Lst([Smb("define"), Imp var, Imp imp]), Env env) {
-  <wnf, env> = normalize(imp, env);
-  env[0][var] = wnf;
-  return <Nil, env>;
+normalize(Lst([Smb("define"), Imp pat, Imp imp]), Env env) {
+  switch (pat) {
+    case Lst([var:Smb(nom), *pars]): {
+      dep = size(env);
+      env[0][var]
+        = Prc(nom, size(pars),
+              Rsl([*Imp args], Env env) {
+                return normalize(imp, reside(pars, args, tail(env, dep)));
+              });
+      return <Nil, env>;
+    }
+    case Smb(nom): {
+      <wnf, env> = normalize(imp, env);
+      env[0][pat] = wnf;
+      return <Nil, env>;
+    }
+    default: return <Rpl("Illegal pattern: <externalize(pat)>"), env>;
+  }
 }
 
 public Rsl
@@ -87,15 +98,11 @@ normalize(Imp imp, Env env) = <imp, env>;
 public Rsl
 reduce(Imp opr, [*Imp opds], Env env) {
   switch (normalize(opr, env).wnf) {
-    case Cls(Lst(vars), bod, dep): {
+    case Prc(_, _, prc): {
       args = [normalize(opd, env).wnf | opd <- opds];
-      return normalize(bod, reside(vars, args, tail(env, dep)));
+      return prc(args, env);
     }
-    case Prm(_, fun): {
-      args = [normalize(opd, env).wnf | opd <- opds];
-      return fun(args, env);
-    }
-    default: return <Rpl("Designating not-function: <opr>"), env>;
+    default: return <Rpl("Designating non-procedure: <externalize(opr)>"), env>;
   }
 }
 

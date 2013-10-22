@@ -57,10 +57,10 @@ public test bool
 verify15() = norm("(null? (list 1 2))").wnf == Fal;
 
 public test bool
-verify16() = norm("(begin (define swap (lambda (a b) (list b a))) (swap 1 2))").wnf == Lst([Nmr(2), Nmr(1)]);
+verify16() = norm("(begin (define (swap a b) (list b a)) (swap 1 2))").wnf == Lst([Nmr(2), Nmr(1)]);
 
 public test bool
-verify17() = norm("(begin (define * (lambda (a b) (+ a b))) (* 1 2))"). wnf == Nmr(3);
+verify17() = norm("(begin (define (* a b) (+ a b)) (* 1 2))"). wnf == Nmr(3);
 
 public test bool
 verify18() = norm("(begin (define x 1) (set! x 2) x)").wnf == Nmr(2);
@@ -72,13 +72,13 @@ public test bool
 verify20() = norm("(if (\> 2 5) 10 20)").wnf == Nmr(20);
 
 public test bool
-verify21() = norm("(begin (define factorial (lambda (n) (if (\> n 1) (* n (factorial (- n 1))) 1))) (factorial 3))").wnf == Nmr(6);
+verify21() = norm("(begin (define (factorial n) (if (\> n 1) (* n (factorial (- n 1))) 1)) (factorial 3))").wnf == Nmr(6);
 
 public test bool
-verify22() = norm("(begin (define length (lambda (xs) (if (null? xs) 0 (+ 1 (length (tail xs)))))) (length (list 1 2 3)))").wnf == Nmr(3);
+verify22() = norm("(begin (define (length xs) (if (null? xs) 0 (+ 1 (length (tail xs))))) (length (list 1 2 3)))").wnf == Nmr(3);
 
 public test bool
-verify23() = norm("(begin (define x 1) (define f (lambda (y) (+ x y))) (set! x 2) (f 3))").wnf == Nmr(5);
+verify23() = norm("(begin (define x 1) (define (f y) (+ x y)) (set! x 2) (f 3))").wnf == Nmr(5);
 
 public test bool
 verify24() = norm("(/ 2 3)").wnf == Nmr(0);
@@ -96,8 +96,15 @@ public test bool
 verify28() = norm("(\> (list 2 1) (list 1 2))").wnf == Tru;
 
 public test bool
-verify29() = norm("(begin (define x 1) (define f (lambda (y) (+ x y))) ((lambda (x) (f 3)) 2))").wnf == Nmr(4);
+verify29() = norm("(begin (define x 1) (define (f y) (+ x y)) (define x 2) (f 3))").wnf == Nmr(5);
 
 public test bool
-verify30() = norm("(begin (define f (lambda (x) (begin (define g (lambda (y) (+ x y))) g))) (define h (f 1)) (h 2))").wnf == Nmr(3);
+verify30() = norm("(begin (define (f x) (begin (define (g y) (+ x y)) g)) (define h (f 1)) (h 2))").wnf == Nmr(3);
+
+public test bool
+verify31() = norm("(begin (define x 1) x)").wnf == Nmr(1);
+
+public test bool
+verify32() = norm("(begin (define (id x) x) (id 1))").wnf == Nmr(1);
+
 
