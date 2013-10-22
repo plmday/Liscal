@@ -42,7 +42,7 @@ public test bool
 verify10() = norm("(\> 3 2)").wnf != Fal;
 
 public test bool
-verify11() = norm("(\>3 4)").wnf == Fal;
+verify11() = norm("(\> 3 4)").wnf == Fal;
 
 public test bool
 verify12() = norm("(= 3 3)").wnf != Fal;
@@ -106,5 +106,4 @@ verify31() = norm("(begin (define x 1) x)").wnf == Nmr(1);
 
 public test bool
 verify32() = norm("(begin (define (id x) x) (id 1))").wnf == Nmr(1);
-
 
