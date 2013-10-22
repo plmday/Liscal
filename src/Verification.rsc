@@ -42,7 +42,7 @@ public test bool
 verify10() = norm("(\> 3 2)").wnf != Fal;
 
 public test bool
-verify11() = norm("(\>3 4)").wnf == Fal;
+verify11() = norm("(\> 3 4)").wnf == Fal;
 
 public test bool
 verify12() = norm("(= 3 3)").wnf != Fal;
