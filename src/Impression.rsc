@@ -53,7 +53,7 @@ compare(Imp imp1, Imp imp2) {
       if (bln1 > bln2) return GT();
       return EQ();
     }
-    case <Sym(nom1), Sym(nom2)>: {
+    case <Smb(nom1), Smb(nom2)>: {
       if (nom1 < nom2) return LT();
       if (nom1 > nom2) return GT();
       return EQ();
