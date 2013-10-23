@@ -14,9 +14,6 @@ import util::IDE;
 public Rsl
 normalize(str inp, Env env) = normalize(internalize(inp), env);
 
-public Rsl
-normalize(str inp, Env env) = normalize(internalize(inp), empty);
-
 
 public void
 lascarINEL() {
