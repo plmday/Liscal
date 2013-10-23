@@ -53,7 +53,7 @@ normalize(Lst([Smb("begin"), *Imp imps]), Env env) {
 }
 
 public Rsl
-normalize(Lst([Smb("set!"), Imp var, Imp imp]), Env env) {
+normalize(Lst([Smb("set!"), var:Smb(nom), Imp imp]), Env env) {
   <wnf, env> = normalize(imp, env);
   ind = search(var, env);
   if (ind < 0)
