@@ -9,43 +9,56 @@ anno set[Imp] Imp @ fvs;
 
 
 public Imp
-annotateFVs(var:Smb(_)) {
+annotate(var:Smb(_)) {
   return var @ fvs = {var};
 }
 
 public Imp
-annotateFVs(ife:Lst([Smb("if"), Imp cnd, Imp csq, Imp alt])) {
-  return ife @ fvs = annotateFVs(cnd) @ fvs
-             + annotateFVs(csq) @ fvs + annotateFVs(alt) @ fvs;
+annotate(ife:Lst([Smb("if"), Imp cnd, Imp csq, Imp alt])) {
+  cnd1 = annotate(cnd);
+  csq1 = annotate(csq);
+  alt1 = annotate(alt);
+  ife1 = Lst([Smb("if"), cnd1, csq1, alt1]);
+  return ife1 @ fvs = cnd1 @ fvs + csq1 @ fvs + alt1 @ fvs;
 }
 
 public Imp
-annotateFVs(bgn:Lst([Smb("begin"), *Imp imps])) {
-  return bgn @ fvs = ({} | it + annotateFVs(imp) @ fvs | imp <- imps);
+annotate(bgn:Lst([Smb("begin"), *Imp imps])) {
+  imps1 = [annotate(imp) | imp <- imps];
+  bgn1 = Lst([Smb("begin"), *imps1]);
+  return bgn1 @ fvs = ({} | it + imp @ fvs | imp <- imps1);
 }
 
 public Imp
-annotateFVs(ass:Lst([Smb("set!"), var:Smb(_), Imp imp])) {
-  return ass @ fvs = annotateFVs(imp) @ fvs - {var};
+annotate(ass:Lst([Smb("set!"), var:Smb(_), Imp imp])) {
+  imp1 = annotate(imp);
+  ass1 = Lst([Smb("set!"), var, imp1]);
+  return ass1 @ fvs = imp1 @ fvs - {var};
 }
 
 public Imp
-annotateFVs(def:Lst([Smb("define"), var:Smb(_), Imp imp])) {
-  return def @ fvs = annotateFVs(imp) @ fvs - {var};
+annotate(def:Lst([Smb("define"), var:Smb(_), Imp imp])) {
+  imp1 = annotate(imp);
+  def1 = Lst([Smb("define"), var, imp1]);
+  return def1 @ fvs = imp1 @ fvs - {var};
 }
  
 public Imp
-annotateFVs(def:Lst([Smb("define"), Lst([*Imp vars]), Imp bod])) {
-  return def @ fvs = annotateFVs(bod) @ fvs - {var | var <- vars};
+annotate(def:Lst([Smb("define"), cmb:Lst([*Imp vars]), Imp bod])) {
+  bod1 = annotate(bod);
+  def1 = Lst([Smb("define"), cmb, bod1]);
+  return def1 @ fvs = bod1 @ fvs - toSet(vars);
 }
 
 public Imp
-annotateFVs(app:Lst([*Imp imps])) {
-  return app @ fvs = ({} | it + annotateFVs(imp) @ fvs | imp <- imps);
+annotate(app:Lst([*Imp imps])) {
+  imps1 = [annotate(imp) | imp <- imps];
+  app1 = Lst(imps1);
+  return app1 @ fvs = ({} | it + imp @ fvs | imp <- imps1);
 }
 
 public default Imp
-annotateFVs(Imp imp) {
+annotate(Imp imp) {
   return imp @ fvs = {};
 }
 
