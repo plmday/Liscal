@@ -5,11 +5,15 @@ import Impression;
 import Normalization;
 import Initialization;
 import Interaction;
+import Internalization;
+import Externalization;
+import Annotation;
+import Abstraction;
+import Elevation;
 
 
 public Rsl
 norm(str inp) = normalize(inp, initial);
-
 
 public test bool
 verify01() = norm("0").wnf == Nmr(0);
@@ -112,4 +116,36 @@ verify33() = norm("((+ 1) 2)").wnf == Nmr(3);
 
 public test bool
 verify34() = norm("(begin (define add1 (+ 1)) (add1 2))").wnf == Nmr(3);
+
+
+public Imp
+annotate(str inp) = annotate(internalize(inp));
+
+public test bool
+verify35() = annotate("(define x (+ y 1))") @ fvs == { Smb("+"), Smb("y") };
+
+public test bool
+verify36() = annotate("(define (fac n) (if (\< n 1) 1 (* n (fac (- n 1)))))") @ fvs == { Smb("*"), Smb("\<"), Smb("-") };
+
+public test bool
+verify37() = annotate("(define (f x) y)") @ fvs == { Smb("y") };
+
+
+public Imp
+abstract(str inp) = abstract(annotate(inp));
+
+public test bool
+verify38() = abstract("(define x (+ y 1))") @ efs == [];
+
+/*
+public test bool
+verify39() = abstract("(define (fac n) (if (\< n 1) 1 (* n (fac (- n 1)))))") @ efs == ?;
+
+public test bool
+verify40() = abstract("(define (f x) y)") @ efs == ?;
+*/
+
+
+public list[str]
+elevate(list[str] inps) = [externalize(imp) | imp <- elevate([internalize(inp) | inp <- inps])];
 
