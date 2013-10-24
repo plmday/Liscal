@@ -1,4 +1,4 @@
-# Lascar
+# Liscal
 
-Lascar is a Scheme dialect implemented in Rascal.
+Liscal is a Scheme dialect implemented in Rascal.
 
